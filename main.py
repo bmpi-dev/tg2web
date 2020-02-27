@@ -8,6 +8,8 @@ import telethon.sync
 import datetime
 import os
 import sys
+import time
+import glob
 
 channels = ['web_cpc', 'bmpi365', 'improve365']
 
@@ -36,41 +38,67 @@ def sprint(string, *args, **kwargs):
                        .decode('ascii', errors='ignore')
         print(string, *args, **kwargs)
 
-def download_media_by_msg(client, msg):
+def download_media_by_msg(client, channel, msg):
     """Given a message ID, finds the media this message contained and
         downloads it.
     """
-    print('Downloading media to media/...')
-    os.makedirs('media', exist_ok=True)
-    output = client.download_media(
-        msg.media,
-        file='media/'
-    )
-    print('Media downloaded to {}!'.format(output))
+    try:
+        print('Downloading media to media/...')
+        os.makedirs('media', exist_ok=True)
+        file_name = 'media/' + channel + '-' + str(msg.id)
+        file_name_check = file_name + ".*"
+        if len(glob.glob(file_name_check)) > 0:
+            return
+        output = client.download_media(
+            msg.media,
+            file=file_name
+        )
+        print('Media downloaded to {}!'.format(output))
+    except:
+        print("download message media failure, message id is " + msg.id)
 
-def get_local_last_msg_id(channel):
-    msg = Message.select(Message)\
-    .where(Message.channel == channel)\
-    .order_by(Message.msg_id.desc()).get()
-    if msg is not None:
-        return msg.msg_id
+def get_local_last_msg_id(channel_entity):
+    try:
+        msg = Message.select(Message)\
+        .where(Message.channel == channel_entity.username)\
+        .order_by(Message.msg_id.desc()).get()
+        if msg is not None:
+            return msg.msg_id
+    except:
+        pass
 
-def get_remote_last_msg_id(channel):
-    msg = get_history_message(channel, 0, 1)[0]
+def is_message_exists(channel, msg_id):
+    try:
+        msg = Message.select(Message)\
+        .where(Message.channel == channel and Message.msg_id == msg_id)\
+        .get()
+        if msg is not None:
+            return True
+    except:
+        pass
+    return False
+
+def get_remote_last_msg_id(channel_entity):
+    msg = get_history_message(channel_entity, 0, 1)[0]
     if msg is not None:
         return msg.id
 
-def calc_offset_id():
-    pass
+def calc_offset_limit(channel_entity):
+    local_msg_id = get_local_last_msg_id(channel_entity)
+    remote_msg_id = get_remote_last_msg_id(channel_entity)
+    if remote_msg_id <= local_msg_id:
+        return None
+    return remote_msg_id, remote_msg_id - local_msg_id
+    
 
 def get_env(name, default_value=None):
     if name in os.environ:
         return os.environ[name]
     return default_value
 
-def get_history_message(channel, offset_id, limit):
+def get_history_message(channel_entity, offset_id, limit):
     msgs = client(GetHistoryRequest(
-            peer=channel,
+            peer=channel_entity,
             limit=limit,
             offset_date=None,
             offset_id=offset_id,
@@ -164,7 +192,7 @@ class ChannelTelegramClient(TelegramClient):
                 if getattr(msg, 'media', None):
                     content = '<{}> {}'.format(
                         type(msg.media).__name__, msg.message)
-                    download_media_by_msg(self, msg)
+                    download_media_by_msg(self, channel, msg)
 
                 elif hasattr(msg, 'message'):
                     content = msg.message
@@ -178,13 +206,14 @@ class ChannelTelegramClient(TelegramClient):
                 sprint('[{}:{}] (ID={}) {}: {}'.format(
                     msg.date.hour, msg.date.minute, msg.id, name, content))
                 if content is not None:
-                    save_msg = Message(msg_id=msg.id, channel=channel, content=content, type=type(msg.media).__name__, post_date=msg.date)
-                    save_msg.save()
+                    if (not is_message_exists(channel, msg.id)):
+                        save_msg = Message(msg_id=msg.id, channel=channel, content=content, type=type(msg.media).__name__, post_date=msg.date)
+                        save_msg.save()
 
 if __name__ == '__main__':
     SESSION = os.environ.get('TG_SESSION', 'bmpi')
     API_ID = get_env('TG_API_ID')
     API_HASH = get_env('TG_API_HASH')
     client = ChannelTelegramClient(SESSION, API_ID, API_HASH)
-    # run(client.run())
-    print(get_remote_last_msg_id(client.get_entity('web_cpc')))
+    client.run()
+    print(get_local_last_msg_id(client.get_entity('web_cpc')))
