@@ -20,9 +20,10 @@ class BaseModel(Model):
         database = db
 
 class Message(BaseModel):
-    msg_id = CharField()
+    msg_id = IntegerField()
     channel = CharField()
     content = TextField()
+    media_path = TextField()
     type = CharField()
     post_date = DateTimeField()
 
@@ -43,18 +44,19 @@ def download_media_by_msg(client, channel, msg):
         downloads it.
     """
     try:
-        print('Downloading media to media/...')
         os.makedirs('media', exist_ok=True)
         file_name = 'media/' + channel + '-' + str(msg.id)
         file_name_check = file_name + ".*"
         if len(glob.glob(file_name_check)) > 0:
             print('Message media is exists, message id is ' + str(msg.id))
-            return
+            print(glob.glob(file_name_check))
+            return glob.glob(file_name_check)
         output = client.download_media(
             msg.media,
             file=file_name
         )
         print('Media downloaded to {}!'.format(output))
+        return output
     except:
         print("download message media failure, message id is " + msg.id)
 
@@ -67,11 +69,12 @@ def get_local_last_msg_id(channel_entity):
             return msg.msg_id
     except:
         pass
+    return 0
 
 def is_message_exists(channel, msg_id):
     try:
         msg = Message.select(Message)\
-        .where(Message.channel == channel & Message.msg_id == msg_id)\
+        .where((Message.channel == channel) & (Message.msg_id == msg_id))\
         .get()
         if msg is not None:
             return True
@@ -87,10 +90,9 @@ def get_remote_last_msg_id(channel_entity):
 def calc_offset_limit(channel_entity):
     local_msg_id = get_local_last_msg_id(channel_entity)
     remote_msg_id = get_remote_last_msg_id(channel_entity)
-    if remote_msg_id <= local_msg_id:
-        return None
-    return remote_msg_id, remote_msg_id - local_msg_id
-    
+    if int(remote_msg_id) <= int(local_msg_id):
+        return None, None
+    return int(remote_msg_id) + 1, int(remote_msg_id) - int(local_msg_id)
 
 def get_env(name, default_value=None):
     if name in os.environ:
@@ -98,16 +100,22 @@ def get_env(name, default_value=None):
     return default_value
 
 def get_history_message(channel_entity, offset_id, limit):
-    msgs = client(GetHistoryRequest(
-            peer=channel_entity,
-            limit=limit,
-            offset_date=None,
-            offset_id=offset_id,
-            max_id=0,
-            min_id=0,
-            add_offset=0,
-            hash=0)).messages
-    return msgs
+    step_unit = 100
+    n = int(limit / step_unit)
+    v = limit % step_unit
+    message_list = []
+    for i in range(0, n + 1):
+        msgs = client(GetHistoryRequest(
+                peer=channel_entity,
+                limit=step_unit,
+                offset_date=None,
+                offset_id=offset_id - i * step_unit,
+                max_id=0,
+                min_id=0,
+                add_offset=0,
+                hash=0)).messages
+        message_list += msgs
+    return message_list
 
 class ChannelTelegramClient(TelegramClient):
 
@@ -180,7 +188,13 @@ class ChannelTelegramClient(TelegramClient):
     def run(self):
         for channel in channels:
             channel_entity= client.get_entity(channel)
-            messages = get_history_message(channel_entity, 100, 100)
+            # Get channel offset_id and limit
+            offset_id, limit = calc_offset_limit(channel_entity)
+            if offset_id is None:
+                print('channel offset_id is None')
+                continue
+            print('channel is {}, offset_id is {}, limit is {}'.format(channel, offset_id, limit))
+            messages = get_history_message(channel_entity, offset_id, limit)
 
             for msg in reversed(messages):
                 # Note how we access .sender here. Since we made an
@@ -189,11 +203,14 @@ class ChannelTelegramClient(TelegramClient):
                 # events, where Telegram may not always send the user.
                 name = get_display_name(msg.sender)
 
+                media_path = ''
+
                 # Format the message content
                 if getattr(msg, 'media', None):
                     content = '{}'.format(msg.message)
-                    download_media_by_msg(self, channel, msg)
-
+                    media_path = download_media_by_msg(self, channel, msg)
+                    if media_path is None:
+                        media_path = ''
                 elif hasattr(msg, 'message'):
                     content = msg.message
                 elif hasattr(msg, 'action'):
@@ -201,14 +218,13 @@ class ChannelTelegramClient(TelegramClient):
                 else:
                     # Unknown message, simply print its class name
                     content = type(msg).__name__
-
-                # And print it to the user
-                sprint('[{}] (Channel={}, ID={}) {}: {}'.format(
-                    msg.date, channel, msg.id, name, content))
+                    print("Unknown message, content is " + content)
                 
                 if content is not None:
+                    # And print it to the user
+                    sprint('[{}] (Channel={}, ID={}) {}: {}'.format(msg.date, channel, msg.id, name, content))
                     if (not is_message_exists(channel, msg.id)):
-                        save_msg = Message(msg_id=msg.id, channel=channel, content=content, type=type(msg.media).__name__, post_date=msg.date)
+                        save_msg = Message(msg_id=msg.id, channel=channel, content=content, media_path=media_path, type=type(msg.media).__name__, post_date=msg.date)
                         save_msg.save()
                         print('Save message id is ' + str(msg.id))
                     else:
@@ -220,4 +236,4 @@ if __name__ == '__main__':
     API_HASH = get_env('TG_API_HASH')
     client = ChannelTelegramClient(SESSION, API_ID, API_HASH)
     client.run()
-    print(get_local_last_msg_id(client.get_entity('web_cpc')))
+    print(calc_offset_limit(client.get_entity('web_cpc')))
