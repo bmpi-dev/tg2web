@@ -48,6 +48,7 @@ def download_media_by_msg(client, channel, msg):
         file_name = 'media/' + channel + '-' + str(msg.id)
         file_name_check = file_name + ".*"
         if len(glob.glob(file_name_check)) > 0:
+            print('Message media is exists, message id is ' + str(msg.id))
             return
         output = client.download_media(
             msg.media,
@@ -70,7 +71,7 @@ def get_local_last_msg_id(channel_entity):
 def is_message_exists(channel, msg_id):
     try:
         msg = Message.select(Message)\
-        .where(Message.channel == channel and Message.msg_id == msg_id)\
+        .where(Message.channel == channel & Message.msg_id == msg_id)\
         .get()
         if msg is not None:
             return True
@@ -190,8 +191,7 @@ class ChannelTelegramClient(TelegramClient):
 
                 # Format the message content
                 if getattr(msg, 'media', None):
-                    content = '<{}> {}'.format(
-                        type(msg.media).__name__, msg.message)
+                    content = '{}'.format(msg.message)
                     download_media_by_msg(self, channel, msg)
 
                 elif hasattr(msg, 'message'):
@@ -203,12 +203,16 @@ class ChannelTelegramClient(TelegramClient):
                     content = type(msg).__name__
 
                 # And print it to the user
-                sprint('[{}:{}] (ID={}) {}: {}'.format(
-                    msg.date.hour, msg.date.minute, msg.id, name, content))
+                sprint('[{}] (Channel={}, ID={}) {}: {}'.format(
+                    msg.date, channel, msg.id, name, content))
+                
                 if content is not None:
                     if (not is_message_exists(channel, msg.id)):
                         save_msg = Message(msg_id=msg.id, channel=channel, content=content, type=type(msg.media).__name__, post_date=msg.date)
                         save_msg.save()
+                        print('Save message id is ' + str(msg.id))
+                    else:
+                        print('Message exists in DB, id is ' + str(msg.id))
 
 if __name__ == '__main__':
     SESSION = os.environ.get('TG_SESSION', 'bmpi')
