@@ -1,3 +1,8 @@
+#!make
+
+include .env
+export
+
 .PHONY: all
 
 all: pull render sync_s3
