@@ -1,3 +1,4 @@
 peewee==3.13.1
 Telethon==1.9.0
 pystache==0.5.4
+awscli==1.17.9
