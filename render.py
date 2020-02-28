@@ -9,6 +9,8 @@ msgs_dict = {'items': []}
 
 out_html_dir = './html/'
 
+channels = ['web_cpc', 'bmpi365', 'improve365']
+
 renderer = pystache.Renderer()
         
 for msg in Message.select(Message).order_by(Message.post_date.desc()):
@@ -19,7 +21,18 @@ for msg in Message.select(Message).order_by(Message.post_date.desc()):
         item_html = renderer.render_path('item.mustache', msg)
         f.write(item_html)
 
+msgs_dict['items'] = msgs_dict['items'][:20]
 index_html = renderer.render_path('index.mustache', msgs_dict)
 
 with open(out_html_dir + 'index.html', 'w') as f:
     f.write(index_html)
+
+for channel in channels:
+    msgs_dict = {'items': []}
+    for msg in Message.select(Message)\
+    .where(Message.channel == channel)\
+    .order_by(Message.post_date.desc()):
+        msgs_dict['items'].append(model_to_dict(msg))
+    channel_index_html = renderer.render_path('index.mustache', msgs_dict)
+    with open(out_html_dir + channel + '/index.html', 'w') as f:
+        f.write(channel_index_html)

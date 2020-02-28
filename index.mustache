@@ -24,29 +24,43 @@
         img {
             margin: auto;
         }
+        .menu {
+            height: 40px;
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
-    {{#items}}
-        <div class="pure-g main">
-            <div class="pure-u-2-24"></div>
-            <div class="pure-u-20-24">
-                <div>
-                    <p><a href="/{{channel}}/{{msg_id}}.html">#{{channel}}</a></p>
+    <div class="menu">
+        <a href="/improve365/index.html">日积跬步</a>
+        <a href="/bmpi365/index.html">被动收入</a>
+        <a href="/web_cpc/index.html">流量研究</a>
+    </div>
+    <div>
+        {{#items}}
+            <div class="pure-g main">
+                <div class="pure-u-2-24"></div>
+                <div class="pure-u-20-24">
+                    <div>
+                        <p><a href="/{{channel}}/{{msg_id}}.html">#{{channel}}</a></p>
+                    </div>
+                    <div class="card">
+                        {{#is_img}}
+                            <img data-src="https://img.bmpi.dev/{{media_path}}" class="lazyload pure-img"></img>
+                        {{/is_img}}
+                        {{^is_img}}
+                            <p>{{content}}</p>
+                        {{/is_img}}
+                    </div>
                 </div>
-                <div class="card">
-                    {{#is_img}}
-                        <img data-src="https://img.bmpi.dev/{{media_path}}" class="lazyload pure-img"></img>
-                    {{/is_img}}
-                    {{^is_img}}
-                        <p>{{content}}</p>
-                    {{/is_img}}
-                </div>
+                <div class="pure-u-2-24"></div>
             </div>
-            <div class="pure-u-2-24"></div>
-        </div>
-    {{/items}}
+        {{/items}}
+    </div>
+    <div style="margin-top: 20px; text-align: center;">
+        © <a href="https://www.bmpi.dev">构建我的被动收入</a>
+    </div>
 </body>
 
 </html>
