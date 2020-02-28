@@ -44,13 +44,12 @@ def download_media_by_msg(client, channel, msg):
         downloads it.
     """
     try:
-        os.makedirs('media', exist_ok=True)
-        file_name = 'media/' + channel + '-' + str(msg.id)
+        os.makedirs('tg_media', exist_ok=True)
+        file_name = 'tg_media/' + channel + '-' + str(msg.id)
         file_name_check = file_name + ".*"
         if len(glob.glob(file_name_check)) > 0:
             print('Message media is exists, message id is ' + str(msg.id))
-            print(glob.glob(file_name_check))
-            return glob.glob(file_name_check)
+            return glob.glob(file_name_check)[0]
         output = client.download_media(
             msg.media,
             file=file_name
@@ -191,7 +190,7 @@ class ChannelTelegramClient(TelegramClient):
             # Get channel offset_id and limit
             offset_id, limit = calc_offset_limit(channel_entity)
             if offset_id is None:
-                print('channel offset_id is None')
+                print('channel {} offset_id is None'.format(channel))
                 continue
             print('channel is {}, offset_id is {}, limit is {}'.format(channel, offset_id, limit))
             messages = get_history_message(channel_entity, offset_id, limit)
@@ -236,4 +235,3 @@ if __name__ == '__main__':
     API_HASH = get_env('TG_API_HASH')
     client = ChannelTelegramClient(SESSION, API_ID, API_HASH)
     client.run()
-    print(calc_offset_limit(client.get_entity('web_cpc')))

@@ -1,5 +1,5 @@
 .env
 channels.db
 bmpi.session
-media/
+tg_media/
 
