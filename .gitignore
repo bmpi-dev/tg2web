@@ -3,4 +3,5 @@ channels.db
 bmpi.session
 tg_media/
 html/
+__pycache__
 
