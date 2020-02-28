@@ -28,9 +28,10 @@
 </head>
 
 <body>
-    <div class="pure-g main">
-        {{#items}}
-            <div class="pure-u-1-1">
+    {{#items}}
+        <div class="pure-g main">
+            <div class="pure-u-2-24"></div>
+            <div class="pure-u-20-24">
                 <div>
                     <p><a href="/{{channel}}/{{msg_id}}.html">#{{channel}}</a></p>
                 </div>
@@ -43,8 +44,9 @@
                     {{/is_img}}
                 </div>
             </div>
-        {{/items}}
-    </div>
+            <div class="pure-u-2-24"></div>
+        </div>
+    {{/items}}
 </body>
 
 </html>
