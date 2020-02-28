@@ -1,10 +1,31 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-cn">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
         integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+    {{#is_home}}
+    <title>BMPI.dev电报群聚合站</title>
+    <meta name="description" content="BMPI.dev（构建我的被动收入）电报群">
+    <link rel="canonical" href="https://tg.bmpi.dev/">
+    {{/is_home}}
+    {{#is_cpc}}
+    <title>Web流量研究电报频道</title>
+    <meta name="description" content="分享一些Web流量站创建相关的核心技术，如SEO技术、爬虫、资源聚合、API对接、Affiliate Network、Adsense、广告对接平台评测、CPC/CPM/CTR的研究、社交引流等">
+    <link rel="canonical" href="https://tg.bmpi.dev/web_cpc/index.html">
+    {{/is_cpc}}
+    {{#is_bmpi}}
+    <title>被动收入电报频道</title>
+    <meta name="description" content="通过研究【网赚/被动收入/投资理财/技术/联盟营销/Media Buy/SEO/搜索聚合站/社交引流/Niche/套利/关键词挖掘/广告/Amazon/Google/FB】等建立个人被动收入，期望达到躺赚月入上千美刀💰">
+    <link rel="canonical" href="https://tg.bmpi.dev/bmpi365/index.html">
+    {{/is_bmpi}}
+    {{#is_i365}}
+    <title>日积跬步电报频道</title>
+    <meta name="description" content="全栈开发/投资理财/被动收入，我关注的三个焦点。博客地址：https://bmpi.dev">
+    <link rel="canonical" href="https://tg.bmpi.dev/improve365/index.html">
+    {{/is_i365}}
     <style>
         p {
             white-space: pre-wrap;

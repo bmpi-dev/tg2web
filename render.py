@@ -22,6 +22,7 @@ for msg in Message.select(Message).order_by(Message.post_date.desc()):
         f.write(item_html)
 
 msgs_dict['items'] = msgs_dict['items'][:20]
+msgs_dict['is_home'] = True
 index_html = renderer.render_path('index.mustache', msgs_dict)
 
 with open(out_html_dir + 'index.html', 'w') as f:
@@ -29,6 +30,12 @@ with open(out_html_dir + 'index.html', 'w') as f:
 
 for channel in channels:
     msgs_dict = {'items': []}
+    if channel == 'web_cpc':
+        msgs_dict['is_cpc'] = True
+    if channel == 'bmpi365':
+        msgs_dict['is_bmpi'] = True
+    if channel == 'improve365':
+        msgs_dict['is_i365'] = True
     for msg in Message.select(Message)\
     .where(Message.channel == channel)\
     .order_by(Message.post_date.desc()):
