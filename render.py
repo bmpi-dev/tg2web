@@ -11,7 +11,7 @@ out_html_dir = './html/'
 
 renderer = pystache.Renderer()
         
-for msg in Message.select(Message):
+for msg in Message.select(Message).order_by(Message.post_date.desc()):
     msgs_dict['items'].append(model_to_dict(msg))
     channel_html_dir = out_html_dir + msg.channel + '/'
     os.makedirs(channel_html_dir, exist_ok=True)
