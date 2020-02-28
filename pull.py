@@ -1,4 +1,4 @@
-from peewee import *
+from db import *
 from telethon import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.utils import get_display_name
@@ -12,23 +12,6 @@ import time
 import glob
 
 channels = ['web_cpc', 'bmpi365', 'improve365']
-
-db = SqliteDatabase('channels.db')
-
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-class Message(BaseModel):
-    msg_id = IntegerField()
-    channel = CharField()
-    content = TextField()
-    media_path = TextField()
-    type = CharField()
-    post_date = DateTimeField()
-
-db.connect()
-db.create_tables([Message])
 
 def sprint(string, *args, **kwargs):
     """Safe Print (handle UnicodeEncodeErrors on some terminals)"""
@@ -223,7 +206,10 @@ class ChannelTelegramClient(TelegramClient):
                     # And print it to the user
                     sprint('[{}] (Channel={}, ID={}) {}: {}'.format(msg.date, channel, msg.id, name, content))
                     if (not is_message_exists(channel, msg.id)):
-                        save_msg = Message(msg_id=msg.id, channel=channel, content=content, media_path=media_path, type=type(msg.media).__name__, post_date=msg.date)
+                        is_img = False
+                        if type(msg.media).__name__ == 'MessageMediaPhoto':
+                            is_img = True
+                        save_msg = Message(msg_id=msg.id, channel=channel, content=content, media_path=media_path, is_img=is_img, type=type(msg.media).__name__, post_date=msg.date)
                         save_msg.save()
                         print('Save message id is ' + str(msg.id))
                     else:

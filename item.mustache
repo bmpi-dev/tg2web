@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+        integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+    <style>
+        p {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        body {
+            margin: 10px auto;
+        }
+        .main {
+            margin: auto 20px;
+        }
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="pure-g main">
+        <div class="pure-u-1-1">
+            <div>
+                <p><a href="https://t.me/{{channel}}/{{msg_id}}">#{{channel}}</a></p>
+            </div>
+            <div class="card">
+                {{#is_img}}
+                    <img data-src="https://img.bmpi.dev/{{media_path}}" class="lazyload pure-img"></img>
+                {{/is_img}}
+                {{^is_img}}
+                    <p>{{content}}</p>
+                {{/is_img}}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
