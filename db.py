@@ -13,6 +13,7 @@ class Message(BaseModel):
     media_path = TextField()
     type = CharField()
     is_img = BooleanField(default=False)
+    is_render = BooleanField(default=False)
     post_date = DateTimeField()
 
 db.connect()

@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
         integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+    <link rel="icon" type="image/png" href="https://www.bmpi.dev/images/f/favicon-32x32.png"
+    sizes="32x32">
+    <link rel="icon" type="image/png" href="https://www.bmpi.dev/images/f/favicon-16x16.png"
+    sizes="16x16">
     {{#is_home}}
     <title>BMPI.dev电报群聚合站</title>
     <meta name="description" content="BMPI.dev（构建我的被动收入）电报群">
@@ -78,6 +82,7 @@
                     </div>
                     <div class="card">
                         {{#is_img}}
+                            <p>{{content}}</p>
                             <img data-src="https://img.bmpi.dev/{{media_path}}" class="lazyload pure-img"></img>
                         {{/is_img}}
                         {{^is_img}}

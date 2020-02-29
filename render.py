@@ -15,11 +15,14 @@ renderer = pystache.Renderer()
         
 for msg in Message.select(Message).order_by(Message.post_date.desc()):
     msgs_dict['items'].append(model_to_dict(msg))
-    channel_html_dir = out_html_dir + msg.channel + '/'
-    os.makedirs(channel_html_dir, exist_ok=True)
-    with open(channel_html_dir + str(msg.msg_id) + '.html', 'w') as f:
-        item_html = renderer.render_path('item.mustache', msg)
-        f.write(item_html)
+    if (not msg.is_render):
+        channel_html_dir = out_html_dir + msg.channel + '/'
+        os.makedirs(channel_html_dir, exist_ok=True)
+        with open(channel_html_dir + str(msg.msg_id) + '.html', 'w') as f:
+            item_html = renderer.render_path('item.mustache', msg)
+            f.write(item_html)
+        msg.is_render = True
+        msg.save()
 
 msgs_dict['items'] = msgs_dict['items'][:20]
 msgs_dict['is_home'] = True

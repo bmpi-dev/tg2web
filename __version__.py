@@ -1,6 +1,6 @@
 __title__ = 'tg2web'
 __description__ = 'Telegram channel render to web'
-__url__ = 'channel.bmpi.dev'
+__url__ = 'tg.bmpi.dev'
 __version__ = "0.0.1"
 __python_version__ = '3.7.3'
 __author__ = 'Dawei Ma'
