@@ -72,6 +72,66 @@
         <a href="/bmpi365/index.html">被动收入</a>
         <a href="/web_cpc/index.html">流量研究</a>
     </div>
+
+    {{#is_home}}
+    <div class="pure-g main">
+        <div class="pure-u-2-24"></div>
+        <div class="pure-u-20-24">
+            <h1>首页</h1>
+        </div>
+        <div class="pure-u-2-24"></div>
+    </div>
+    {{/is_home}}
+    {{#is_cpc}}
+    <div class="pure-g main">
+        <div class="pure-u-2-24"></div>
+        <div class="pure-u-20-24">
+            <h1>流量研究</h1>
+        </div>
+        <div class="pure-u-2-24"></div>
+    </div>
+    {{/is_cpc}}
+    {{#is_bmpi}}
+    <div class="pure-g main">
+        <div class="pure-u-2-24"></div>
+        <div class="pure-u-20-24">
+            <h1>被动收入</h1>
+        </div>
+        <div class="pure-u-2-24"></div>
+    </div>
+    {{/is_bmpi}}
+    {{#is_i365}}
+    <div class="pure-g main">
+        <div class="pure-u-2-24"></div>
+        <div class="pure-u-20-24">
+            <h1>日积跬步</h1>
+        </div>
+        <div class="pure-u-2-24"></div>
+    </div>
+    {{/is_i365}}
+
+    <div class="pure-g main">
+        <div class="pure-u-2-24"></div>
+        <div class="pure-u-20-24">
+            {{#is_cpc}}
+            <div>
+                <a href="/index.html">首页</a>>流量研究
+            </div>
+            {{/is_cpc}}
+            {{#is_bmpi}}
+            <div>
+                <a href="/index.html">首页</a>>被动收入
+            </div>
+            {{/is_bmpi}}
+            {{#is_i365}}
+            <div>
+                <a href="/index.html">首页</a>>日积跬步
+            </div>
+            {{/is_i365}}
+        </div>
+        <div class="pure-u-2-24"></div>
+    </div>
+
     <div>
         {{#items}}
             <div class="pure-g main">
