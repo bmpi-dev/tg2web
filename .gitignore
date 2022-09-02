@@ -1,6 +1,7 @@
 .env
 channels.db
 bmpi.session
+bmpi.session-journal
 tg_media/
 html/
 __pycache__

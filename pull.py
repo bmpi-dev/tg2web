@@ -1,5 +1,6 @@
 from db import *
 from telethon import TelegramClient
+from telethon.errors import SessionPasswordNeededError
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.utils import get_display_name
 from telethon.network import ConnectionTcpAbridged
